@@ -11,7 +11,7 @@ from bokeh.plotting import figure
 """
 # Gold Nanorods Size Prediction Ver. 1.0
 
-Provided by Link (https://slink.rice.edu) and Landes (qqhttps://lrg.rice.edu) Research Group
+Provided by Link (https://slink.rice.edu) and Landes (https://lrg.rice.edu) Research Group
 
 **_Instruction_**:
 
