@@ -1,11 +1,9 @@
 
 import streamlit as st
 import pandas as pd
-# import matplotlib.pyplot as plt
 import base64
 from sklearn.tree import DecisionTreeRegressor as DTR
 from sklearn.model_selection import GridSearchCV
-# from SessionState import get
 from PIL import Image
 from bokeh.plotting import figure
 """
@@ -28,11 +26,7 @@ st.image(image, caption='This is an example in Excel.')
 2. Hit the prediction button
 """
 
-# def main():
-
 # To load training data
-# path = "./data/"
-
 @st.cache
 def load_data(nrows):
     data = pd.read_csv(path + 'SPP+.csv', nrows=nrows)
@@ -52,10 +46,6 @@ def get_table_download_link(df):
 data_load_state = st.text('Loading data...')
 data = load_data(1000)
 data_load_state.text("Training data conditions: Substrate: Quartz(refractive index: 1.52), Surrounding: Air")
-
-# if st.checkbox('Show all training data'):
-#     st.subheader('Training data')
-#     st.write(data)
 
 #  To input experimental data
 st.header('Experimental Data Input')
@@ -127,15 +117,6 @@ if st.button("Prediction"):
 
     st.write(df)
 
-    # fig, ax = plt.subplots(figsize=(5, 5), dpi=300)
-    # plt.scatter(lexp_y_pred, wexp_y_pred, c="r", s=2, linewidth=1, alpha=0.5, label="Predicted width")
-    # plt.xlabel("Predicted width", fontsize=12)
-    # plt.ylabel("Predicted length", fontsize=12)
-    # plt.xlim([10, 100])
-    # plt.ylim([10, 100])
-    # # plt.legend(bbox_to_anchor=(0, 1), loc='lower left', borderaxespad=0, fontsize=10)
-    # st.pyplot(fig)
-
     p = figure(
         title='Scatter plot',
         x_axis_label='Predicted Width (nm)',
@@ -145,22 +126,3 @@ if st.button("Prediction"):
     st.bokeh_chart(p, use_container_width=True)
 
     st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-
-# if __name__ == "__main__":
-#     # execute only if run as a script
-#     main()
-
-#  Basic auth
-# session_state = get(password='')
-#
-# if session_state.password != 'dunkel':
-#     pwd_placeholder = st.sidebar.empty()
-#     pwd = pwd_placeholder.text_input("Password:", value="", type="password")
-#     session_state.password = pwd
-#     if session_state.password == 'dunkel':
-#         pwd_placeholder.empty()
-#         main()
-#     else:
-#         st.error("the password you entered is incorrect")
-# else:
-#     main()
