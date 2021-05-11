@@ -1,4 +1,4 @@
-
+from pycaret.regression import load_model, predict_model
 import streamlit as st
 import pandas as pd
 import base64
@@ -6,6 +6,7 @@ from sklearn.tree import DecisionTreeRegressor as DTR
 from sklearn.model_selection import GridSearchCV
 from PIL import Image
 from bokeh.plotting import figure
+import joblib
 """
 # Gold Nanorods Size Prediction Ver. 1.0
 
@@ -17,7 +18,7 @@ Provided by Link (https://slink.rice.edu) and Landes (https://lrg.rice.edu) Rese
 
 """
 
-# To load training data
+# To load csv image
 path = "./data/"
 image = Image.open(path + 'example.png')
 st.image(image, caption='This is an example in Excel.')
@@ -25,12 +26,6 @@ st.image(image, caption='This is an example in Excel.')
 """
 2. Hit the prediction button
 """
-
-# To load training data
-@st.cache
-def load_data(nrows):
-    data = pd.read_csv(path + 'SPP+.csv', nrows=nrows)
-    return data
 
 def get_table_download_link(df):
     """Generates a link allowing the data in a given panda dataframe to be downloaded
@@ -43,9 +38,7 @@ def get_table_download_link(df):
     href = f'<a href="data:file/csv;base64,{b64}" download="prediction_output.csv">Click here to download the outcome in .csv file</a>'
     return href
 
-data_load_state = st.text('Loading data...')
-data = load_data(1000)
-data_load_state.text("Training data conditions: Substrate: Quartz(refractive index: 1.52), Surrounding: Air")
+st.text("Training data conditions: Substrate: Quartz(refractive index: 1.52), Surrounding: Air")
 
 #  To input experimental data
 st.header('Experimental Data Input')
@@ -57,30 +50,14 @@ if uploaded_file:
     Exp_data = pd.DataFrame(dataframe)
     st.write(Exp_data)
 
-# arranging features from original dataset for model learning
-x = data.drop(['Wavelength (nm)', 'Width (nm)', 'AspectRatio', 'Length (nm)', 'Linewidth (nm)', 'MaxCscat'], axis=1)
-w_y = data['Width (nm)']
-l_y = data['Length (nm)']
-
-# parameters for GridSearchCV class
-param_grid = {'max_depth': range(1, 31)}
-
-# Initialize GridSearchCV class
-wgs = GridSearchCV(estimator=DTR(),
-                   param_grid=param_grid,
-                   cv=10, scoring='neg_mean_squared_error')
-lgs = GridSearchCV(estimator=DTR(),
-                   param_grid=param_grid,
-                   cv=10, scoring='neg_mean_squared_error')
-
-wgs.fit(x, w_y)
-lgs.fit(x, l_y)
-
 if st.button("Prediction"):
 
     st.text('Predicted results')
-    wexp_y_pred = wgs.predict(Exp_data)
-    lexp_y_pred = lgs.predict(Exp_data)
+    dt_w_model = joblib.load('joblib_width_gs.pkl')
+    dt_l_model = joblib.load('joblib_length_gs.pkl')
+
+    wexp_y_pred = dt_w_model.predict(Exp_data)
+    lexp_y_pred = dt_l_model.predict(Exp_data)
 
     df_P = pd.DataFrame({"Particle": range(1, len(Exp_data['E_res']) + 1)})
     df_E = pd.DataFrame({"E_res (eV)": Exp_data['E_res']})
