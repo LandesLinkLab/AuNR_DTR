@@ -126,4 +126,3 @@ if st.button("Prediction"):
     st.bokeh_chart(p, use_container_width=True)
 
     st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-
