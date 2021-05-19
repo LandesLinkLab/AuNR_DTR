@@ -26,12 +26,12 @@ st.image(image, caption='This is an example in Excel.')
 2. Hit the prediction button
 """
 
-def get_table_download_link(df):
+def get_table_download_link(df_results):
     """Generates a link allowing the data in a given panda dataframe to be downloaded
     in:  dataframe
     out: href string
     """
-    csv = df.to_csv(index=False)
+    csv = df_results.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
     # href = f'<a href="data:file/csv;base64,{b64}">Download csv file</a>'
     href = f'<a href="data:file/csv;base64,{b64}" download="prediction_output.csv">Click here to download the outcome in .csv file</a>'
@@ -52,53 +52,52 @@ if uploaded_file:
 if st.button("Prediction"):
 
     st.text('Predicted results')
-    dt_w_model = joblib.load('joblib_width_gs.pkl')
-    dt_l_model = joblib.load('joblib_length_gs.pkl')
+    dt_model_width = joblib.load('joblib_width_gs.pkl')
+    dt_model_length = joblib.load('joblib_length_gs.pkl')
 
-    wexp_y_pred = dt_w_model.predict(Exp_data)
-    lexp_y_pred = dt_l_model.predict(Exp_data)
+    predicted_width = dt_model_width.predict(Exp_data)
+    predicted_length = dt_model_length.predict(Exp_data)
 
-    df_P = pd.DataFrame({"Particle": range(1, len(Exp_data['E_res']) + 1)})
-    df_E = pd.DataFrame({"E_res (eV)": Exp_data['E_res']})
-    df_L = pd.DataFrame({"Linewidth (eV)": Exp_data['Linewidth']})
-    df_w = pd.DataFrame({"Predicted_Width (nm)": wexp_y_pred})
-    df_l = pd.DataFrame({"Predicted_Length (nm)": lexp_y_pred})
-    df_A = pd.DataFrame({"Aspect Ratio": lexp_y_pred / wexp_y_pred})
-    DF1 = pd.concat([df_E, df_L], axis=1, sort=True)
-    DF2 = pd.concat([df_w, df_l], axis=1, sort=True)
-    dfff = pd.concat([DF1, DF2], axis=1, sort=True)
-    dff = pd.concat([df_P, dfff], axis=1, sort=True)
-    df = pd.concat([dff, df_A], axis=1, sort=True)
+    df_particle = pd.DataFrame({"Particle": range(1, len(Exp_data['E_res']) + 1)})
+    df_e_res = pd.DataFrame({"E_res (eV)": Exp_data['E_res']})
+    df_linewidth = pd.DataFrame({"Linewidth (eV)": Exp_data['Linewidth']})
+    df_predicted_width = pd.DataFrame({"Predicted Width (nm)": predicted_width})
+    df_predicted_length = pd.DataFrame({"Predicted Length (nm)": predicted_length})
+    df_aspect_ratio = pd.DataFrame({"Aspect Ratio": predicted_length / predicted_width})
+    df_input = pd.concat([df_e_res, df_linewidth], axis=1, sort=True)
+    df_output = pd.concat([df_predicted_width, df_predicted_length], axis=1, sort=True)
+    df_input_output = pd.concat([df_input, df_output], axis=1, sort=True)
+    df_particle_input_output = pd.concat([df_particle, df_input_output], axis=1, sort=True)
+    df_results = pd.concat([df_particle_input_output, df_aspect_ratio], axis=1, sort=True)
 
-    Mean_df_E = Exp_data['E_res'].mean()
-    Mean_df_L = Exp_data['Linewidth'].mean()
-    Mean_df_w = wexp_y_pred.mean()
-    Mean_df_l = lexp_y_pred.mean()
-    Mean_df_A = (lexp_y_pred / wexp_y_pred).mean()
+    df_mean_e_res = Exp_data['E_res'].mean()
+    df_mean_linewidth = Exp_data['Linewidth'].mean()
+    df_mean_predicted_width = predicted_width.mean()
+    df_mean_predicted_length = predicted_length.mean()
+    df_mean_aspect_ratio = (predicted_length / predicted_width).mean()
 
-    Std_df_E = Exp_data['E_res'].std()
-    Std_df_L = Exp_data['Linewidth'].std()
-    Std_df_w = wexp_y_pred.std()
-    Std_df_l = lexp_y_pred.std()
-    Std_df_A = (lexp_y_pred / wexp_y_pred).std()
+    df_std_e_res = Exp_data['E_res'].std()
+    df_std_linewidth = Exp_data['Linewidth'].std()
+    df_std_predicted_width = predicted_width.std()
+    df_std_predicted_length = predicted_length.std()
+    df_std_aspect_ratio = (predicted_length / predicted_width).std()
 
-    column1 = ['Particle', 'E_res (eV)', 'Linewidth (eV)', 'Predicted_Width (nm)', 'Predicted_Length (nm)',
+    column1 = ['Particle', 'E_res (eV)', 'Linewidth (eV)', 'Predicted Width (nm)', 'Predicted Length (nm)',
                'Aspect Ratio']
-    list1 = [['Mean', Mean_df_E, Mean_df_L, Mean_df_w, Mean_df_l, Mean_df_A]]
-    list2 = [['Std', Std_df_E, Std_df_L, Std_df_w, Std_df_l, Std_df_A]]
-    df1 = pd.DataFrame(data=list1, columns=column1)
-    df2 = pd.DataFrame(data=list2, columns=column1)
-    df = df.append(df1, ignore_index=True)
-    df = df.append(df2, ignore_index=True)
+    list1 = [['Mean', df_mean_e_res, df_mean_linewidth, df_mean_predicted_width, df_mean_predicted_length, df_mean_aspect_ratio]]
+    list2 = [['Std', df_std_e_res, df_std_linewidth, df_std_predicted_width, df_std_predicted_length, df_std_aspect_ratio]]
+    df_mean = pd.DataFrame(data=list1, columns=column1)
+    df_std = pd.DataFrame(data=list2, columns=column1)
+    df_results = df_results.append(df_mean, ignore_index=True)
+    df_results = df_results.append(df_std, ignore_index=True)
 
-    st.write(df)
+    st.write(df_results)
 
-    p = figure(
+    fig = figure(
         title='Scatter plot',
         x_axis_label='Predicted Width (nm)',
         y_axis_label='Predicted Length (nm)')
+    fig.scatter(predicted_width, predicted_length, size=5)
+    st.bokeh_chart(fig, use_container_width=True)
 
-    p.scatter(wexp_y_pred, lexp_y_pred, size=5)
-    st.bokeh_chart(p, use_container_width=True)
-
-    st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+    st.markdown(get_table_download_link(df_results), unsafe_allow_html=True)
