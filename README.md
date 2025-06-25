@@ -1,4 +1,4 @@
-# SPP_app Version 1.1
+# SPP App Version 1.2
 
 ![TOC](https://user-images.githubusercontent.com/23239448/118331280-02501f00-b4ce-11eb-9baf-7b117e16adff.png)
 
@@ -6,7 +6,12 @@ This web-based GUI allows you to predict AuNR width and length using our trained
 
 Available on [HERE](https://goldnanorod-size-predictor.streamlit.app)
 
-## How to use
+## **Reference**
+When publishing results obtained with the SPP App, we ask you to cite the following paper:
+
+    K. Shiratori and L. D. C. Biship, B. Ostovar, R. Baiyasi, Y.-Y. Cai, P. J. Rossky, C. F. Landes, and S. Link, J. Phys. Chem. C, 125, 19353-19361 (2021).
+
+## **How to use**
 
 ![GUI1](https://user-images.githubusercontent.com/23239448/118331287-054b0f80-b4ce-11eb-93d4-59ea846eeeeb.png)
 
