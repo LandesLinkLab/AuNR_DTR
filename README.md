@@ -4,7 +4,7 @@
 
 This web-based GUI allows you to predict AuNR width and length using our trained decision-tree model.
 
-Available on http://sizeprediction.rice.edu or https://slink.rice.edu/gold-nanorods-size-prediction-widget/
+Available on [http://sizeprediction.rice.edu or https://slink.rice.edu/gold-nanorods-size-prediction-widget/](https://goldnanorod-size-predictor.streamlit.app)
 
 ## How to use
 
